@@ -10,14 +10,14 @@ if(isset($ticker)){
 //check if $ticker is set
 $ticker = strtoupper($ticker);
 
-//URLs (valid on 4/8/2012) 
+//INSERT THE WANTED URLS TO BE FETCHED
 //These need to be changed as the formats of the pages change over time
-$reuters= "http://reuters.com/finance/stocks/overview?symbol=". $ticker;
-$nasdaq= "http://www.nasdaq.com/symbol/". $ticker;
-$yahoo= "http://finance.yahoo.com/q?s=". $ticker;
+$reuters= "http://www.example.com". $ticker;
+$nasdaq= "http://". $ticker;
+$yahoo= "http://". $ticker;
 
 
-//Try to retrieve Reuters price first (most reliable of 3 possible sources)
+//Try to retrieve 2nd urls price first (most reliable of 3 possible sources)
 $reutResult = file_get_contents($reuters);
 $nyArr1 = explode( 'font-size: 23px;">', $reutResult);
 if($nyArr1[1]){
@@ -29,8 +29,8 @@ $nyPrice = $nyArr2[0];
 
 
 if($nyPrice){
-    // We have Reuter's price data for this stock
-     $jsonResponse = '{"price": "'.floatval($nyPrice).'", "source": "Reuters"}';
+    // We have 2nd price data for this stock
+     $jsonResponse = '{"price": "'.floatval($nyPrice).'", "source": "2ndurls"}';
      echo json_encode($jsonResponse);
     return;
 
@@ -40,9 +40,9 @@ if($nyPrice){
 
 else{
 
-//could not get Reuters, so trying Nasdaq
+//could not get 2ndurls, so trying 1st
  $nasResult = file_get_contents($nasdaq);   
- //Try to retrieve Nasdaq price:
+ //Try to retrieve 1st price:
 $nasArr1 = explode( "_LastSale1'>", $nasResult);
 if($nasArr1[1]){
 $nasArr2 = explode( "</label>", $nasArr1[1]);
@@ -53,10 +53,10 @@ $nasPrice = $nasArr2[0];
 
 
 if($nasPrice){
-    //we have Nasdaq's price
+    //we have 1sturls price
     $nasPrice = str_replace("$", "", $nasPrice);
     $nasPrice = str_replace(" ", "", $nasPrice);
-     $jsonResponse = '{"price": "'. $nasPrice.'", "source": "Nasdaq"}';
+     $jsonResponse = '{"price": "'. $nasPrice.'", "source": "1sturls"}';
      echo json_encode($jsonResponse);
     //return;
 
@@ -65,7 +65,7 @@ if($nasPrice){
 
 
 else{
-    //could not get Nasdaq or Reutors, so trying Yahoo
+    //could not get 1st or 2nd, so trying 3rdurl
     $yahResult = file_get_contents($yahoo);
 
 $ticker = strtolower($ticker);
@@ -81,7 +81,7 @@ $yahPrice = $yahArr2[0];
 
 
 if($yahPrice){
-     $jsonResponse = '{"price": "'.floatval($yahPrice).'" , "source": "Yahoo"}';
+     $jsonResponse = '{"price": "'.floatval($yahPrice).'" , "source": "3rd"}';
      echo json_encode($jsonResponse);
     //return;
 
